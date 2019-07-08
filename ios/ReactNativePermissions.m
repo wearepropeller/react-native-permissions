@@ -34,17 +34,12 @@
   #import "RCTEventDispatcher.h"
 #endif
 
-#import "RNPLocation.h"
 #import "RNPNotification.h"
 #import "RNPAudioVideo.h"
 #import "RNPPhoto.h"
-#import "RNPContacts.h"
-#import "RNPBackgroundRefresh.h"
-#import "RNPMotion.h"
 
 
 @interface ReactNativePermissions()
-@property (strong, nonatomic) RNPLocation *locationMgr;
 @property (strong, nonatomic) RNPNotification *notificationMgr;
 @end
 
@@ -107,32 +102,14 @@ RCT_REMAP_METHOD(getPermissionStatus, getPermissionStatus:(RNPType)type json:(id
     NSString *status;
 
     switch (type) {
-
-        case RNPTypeLocation: {
-            NSString *locationPermissionType = [RCTConvert NSString:json];
-            status = [RNPLocation getStatusForType:locationPermissionType];
-            break;
-        }
         case RNPTypeCamera:
             status = [RNPAudioVideo getStatus:@"video"];
-            break;
-        case RNPTypeMicrophone:
-            status = [RNPAudioVideo getStatus:@"audio"];
             break;
         case RNPTypePhoto:
             status = [RNPPhoto getStatus];
             break;
-        case RNPTypeContacts:
-            status = [RNPContacts getStatus];
-            break;
         case RNPTypeNotification:
             status = [RNPNotification getStatus];
-            break;
-        case RNPTypeBackgroundRefresh:
-            status = [RNPBackgroundRefresh getStatus];
-            break;
-        case RNPTypeMotion:
-            status = [RNPMotion getStatus];
             break;
         default:
             break;
@@ -146,20 +123,12 @@ RCT_REMAP_METHOD(requestPermission, permissionType:(RNPType)type json:(id)json r
     NSString *status;
 
     switch (type) {
-        case RNPTypeLocation:
-            return [self requestLocation:json resolve:resolve];
         case RNPTypeCamera:
             return [RNPAudioVideo request:@"video" completionHandler:resolve];
-        case RNPTypeMicrophone:
-            return [RNPAudioVideo request:@"audio" completionHandler:resolve];
         case RNPTypePhoto:
             return [RNPPhoto request:resolve];
-        case RNPTypeContacts:
-            return [RNPContacts request:resolve];
         case RNPTypeNotification:
-            return [self requestNotification:json resolve:resolve];\
-        case RNPTypeMotion:
-            return [RNPMotion request:resolve];
+            return [self requestNotification:json resolve:resolve];
         default:
             break;
     }
@@ -167,16 +136,6 @@ RCT_REMAP_METHOD(requestPermission, permissionType:(RNPType)type json:(id)json r
 
 }
 
-- (void) requestLocation:(id)json resolve:(RCTPromiseResolveBlock)resolve
-{
-    if (self.locationMgr == nil) {
-        self.locationMgr = [[RNPLocation alloc] init];
-    }
-
-    NSString *type = [RCTConvert NSString:json];
-
-    [self.locationMgr request:type completionHandler:resolve];
-}
 
 - (void) requestNotification:(id)json resolve:(RCTPromiseResolveBlock)resolve
 {
